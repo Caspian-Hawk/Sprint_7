@@ -1,169 +1,114 @@
 package sprintseven;
 
+import com.github.javafaker.Faker;
+import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
 import io.restassured.config.LogConfig;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.http.HttpStatus;
+import org.junit.Before;
 import org.junit.Test;
 import sprintseven.steps.CourierSteps;
-
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class LoginCourierTests {
 
     private CourierSteps courierSteps = new CourierSteps();
+    private final Faker faker = new Faker();
     private String login;
     private String password;
     private String firstName;
 
+    @Before
+    public void setUp() { // создания курьера
+        RestAssured.config = RestAssured.config()
+                .logConfig(LogConfig.logConfig().enableLoggingOfRequestAndResponseIfValidationFails());
+
+        login = faker.name().username();
+        password = faker.internet().password();
+        firstName = faker.name().firstName();
+
+        courierSteps
+                .createCourierWithAllRequiredFields(login, password, firstName)
+                .statusCode(HttpStatus.SC_CREATED)
+                .body("ok", is(true));
+    }
+
     @Test
-    @DisplayName("Check possibility login courier")
-    public void checkPossibilityLoginCourier() { // курьер может авторизоваться
+    @DisplayName("Test possibility login courier")
+    @Description("Этот тест проверяет что можно авторизовать курьера")
+    public void testPossibilityLoginCourier() { // курьер может авторизоваться
 
         RestAssured.config = RestAssured.config()
                 .logConfig(LogConfig.logConfig().enableLoggingOfRequestAndResponseIfValidationFails());
 
-        login = RandomStringUtils.randomAlphabetic(10);
-        password = RandomStringUtils.randomAlphabetic(10);
-
-        courierSteps
-                .createCourierWithoutFirstName(login, password)
-                .statusCode(201)
-                .body("ok", is(true));
-
         courierSteps
                 .loginCourier(login, password)
-                .statusCode(200)
+                .statusCode(HttpStatus.SC_OK)
                 .body("id", notNullValue());
     }
 
     @Test
-    @DisplayName("Check login courier with all required fields")
-    public void checkLoginCourierWithAllRequiredFields() { // для авторизации нужно передать все обязательные поля
+    @DisplayName("Test error wrong login")
+    @Description("Этот тест проверяет что система вернёт ошибку \"Учетная запись не найдена\", если неправильно указать login или password")
+    public void testErrorWrongLogin() { // система вернёт ошибку, если неправильно указать логин или пароль
 
         RestAssured.config = RestAssured.config()
                 .logConfig(LogConfig.logConfig().enableLoggingOfRequestAndResponseIfValidationFails());
 
-        login = RandomStringUtils.randomAlphabetic(10);
-        password = RandomStringUtils.randomAlphabetic(10);
-        firstName = RandomStringUtils.randomAlphabetic(10);
-
-        courierSteps
-                .createCourierWithAllRequiredFields(login, password, firstName)
-                .statusCode(201)
-                .body("ok", is(true));
+        login = faker.name().username();
 
         courierSteps
                 .loginCourier(login, password)
-                .statusCode(200)
-                .body("id", notNullValue());
-    }
-
-    @Test
-    @DisplayName("Check error wrong login")
-    public void checkErrorWrongLogin() { // система вернёт ошибку, если неправильно указать логин или пароль
-
-        RestAssured.config = RestAssured.config()
-                .logConfig(LogConfig.logConfig().enableLoggingOfRequestAndResponseIfValidationFails());
-
-        login = RandomStringUtils.randomAlphabetic(10);
-        password = RandomStringUtils.randomAlphabetic(10);
-        firstName = RandomStringUtils.randomAlphabetic(10);
-
-        courierSteps
-                .createCourierWithAllRequiredFields(login, password, firstName)
-                .statusCode(201)
-                .body("ok", is(true));
-
-        login = RandomStringUtils.randomAlphabetic(10);
-
-        courierSteps
-                .loginCourier(login, password)
-                .statusCode(404)
+                .statusCode(HttpStatus.SC_NOT_FOUND)
                 .body("message", is("Учетная запись не найдена"));
     }
 
     @Test
-    @DisplayName("Check error without login")
-    public void checkErrorWithoutLogin() { // если какого-то поля нет, запрос возвращает ошибку
+    @DisplayName("Test error without login")
+    @Description("Этот тест проверяет что запрос вернёт ошибку \"Недостаточно данных для входа\", если не указывать login при авторизации")
+    public void testErrorWithoutLogin() { // если какого-то поля нет, запрос возвращает ошибку
 
         RestAssured.config = RestAssured.config()
                 .logConfig(LogConfig.logConfig().enableLoggingOfRequestAndResponseIfValidationFails());
 
-        login = RandomStringUtils.randomAlphabetic(10);
-        password = RandomStringUtils.randomAlphabetic(10);
-        firstName = RandomStringUtils.randomAlphabetic(10);
-
-        courierSteps
-                .createCourierWithAllRequiredFields(login, password, firstName)
-                .statusCode(201)
-                .body("ok", is(true));
-
         courierSteps
                 .loginCourierWithoutLogin(password)
-                .statusCode(400)
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body("message", is("Недостаточно данных для входа")); // если логиниться без логина выдает ошибку
     }
 
     @Test
-    @DisplayName("Check error without password")
-    public void checkErrorWithoutPassword() { // если какого-то поля нет, запрос возвращает ошибку
+    @DisplayName("Test error without password")
+    @Description("Этот тест проверяет что запрос вернёт ошибку \"Недостаточно данных для входа\", если не указывать password при авторизации")
+    public void testErrorWithoutPassword() { // если какого-то поля нет, запрос возвращает ошибку
 
         RestAssured.config = RestAssured.config()
                 .logConfig(LogConfig.logConfig().enableLoggingOfRequestAndResponseIfValidationFails());
 
-        login = RandomStringUtils.randomAlphabetic(10);
-        password = RandomStringUtils.randomAlphabetic(10);
-        firstName = RandomStringUtils.randomAlphabetic(10);
-
-        courierSteps
-                .createCourierWithAllRequiredFields(login, password, firstName)
-                .statusCode(201)
-                .body("ok", is(true));
-
         courierSteps
                 .loginCourierWithoutPassword(login)
-                .statusCode(400)
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body("message", is("Недостаточно данных для входа")); // BUG, тут какие-то проблемы с сервером
     }
 
     @Test
-    @DisplayName("Check error non existent login")
-    public void checkErrorNonExistentLogin() { // если авторизоваться под несуществующим пользователем, запрос возвращает ошибку
+    @DisplayName("Test error non existent login")
+    @Description("Этот тест проверяет если авторизоваться под несуществующим пользователем, запрос возвращает ошибку \"Учетная запись не найдена\"")
+    public void testErrorNonExistentLogin() { // если авторизоваться под несуществующим пользователем, запрос возвращает ошибку
 
         RestAssured.config = RestAssured.config()
                 .logConfig(LogConfig.logConfig().enableLoggingOfRequestAndResponseIfValidationFails());
 
-        login = RandomStringUtils.randomAlphabetic(10);
-        password = RandomStringUtils.randomAlphabetic(10);
-        firstName = RandomStringUtils.randomAlphabetic(10);
+        login = faker.name().username();
+        password = faker.internet().password();
+        firstName = faker.name().firstName();
 
         courierSteps
                 .loginCourier(login, password)
-                .statusCode(404)
+                .statusCode(HttpStatus.SC_NOT_FOUND)
                 .body("message", is("Учетная запись не найдена"));
-    }
-
-    @Test
-    @DisplayName("Check response id")
-    public void checkResponseId() { // успешный запрос возвращает id
-
-        RestAssured.config = RestAssured.config()
-                .logConfig(LogConfig.logConfig().enableLoggingOfRequestAndResponseIfValidationFails());
-
-        login = RandomStringUtils.randomAlphabetic(10);
-        password = RandomStringUtils.randomAlphabetic(10);
-
-        courierSteps
-                .createCourierWithoutFirstName(login, password)
-                .statusCode(201)
-                .body("ok", is(true));
-
-        courierSteps
-                .loginCourier(login, password)
-                .statusCode(200)
-                .body("id", notNullValue());
     }
 
     public void tearDown() {
