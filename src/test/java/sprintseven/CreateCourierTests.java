@@ -10,7 +10,7 @@ import org.junit.Test;
 import sprintseven.steps.CourierSteps;
 import static org.hamcrest.Matchers.is;
 
-public class CreateCourierTests {
+public class CreateCourierTests { // тесты для курьера
 
     private CourierSteps courierSteps = new CourierSteps();
     private final Faker faker = new Faker();

@@ -1,6 +1,6 @@
 package sprintseven.steps;
 
-public class CourierModel {
+public class CourierModel { // через аннотацию @Data не получилось
     private String login;
     private String password;
     private String firstName;

@@ -9,8 +9,8 @@
 В проекте используется:
 * JAVA 11
 * JUnit 4
-* RestAssured
-* Allure
+* RestAssured 5.5.1
+* Allure 2.10.0
 
 Запуск тестов: `mvn clean test`
 

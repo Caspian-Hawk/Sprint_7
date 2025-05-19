@@ -5,7 +5,7 @@ import io.restassured.response.ValidatableResponse;
 import static sprintseven.steps.ApiEndpoints.ORDER;
 import static sprintseven.steps.ApiEndpoints.ORDER_FINISH;
 
-public class OrderSteps {
+public class OrderSteps { // методы для заказа
 
     @Step("Create order with multiple colors")
     public ValidatableResponse createOrderWithMultipleColors(String firstName, String lastName, String address) {

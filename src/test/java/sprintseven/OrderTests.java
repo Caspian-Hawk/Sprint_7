@@ -12,7 +12,7 @@ import org.junit.Test;
 import sprintseven.steps.OrderSteps;
 import static org.hamcrest.Matchers.notNullValue;
 
-public class OrderTests {
+public class OrderTests { // заказы
 
     private OrderSteps orderSteps = new OrderSteps();
     private final Faker faker = new Faker();
@@ -62,7 +62,7 @@ public class OrderTests {
 
         RestAssured.config = RestAssured.config()
                 .logConfig(LogConfig.logConfig().enableLoggingOfRequestAndResponseIfValidationFails());
-        
+
         ValidatableResponse listOrders = orderSteps
                 .getOrders()
                 .statusCode(HttpStatus.SC_OK)

@@ -23,7 +23,7 @@ public class ParametrizedOrderScooterTest {
     private String[] color;
     private Integer orderId;
 
-    public ParametrizedOrderScooterTest(String[] color) {
+    public ParametrizedOrderScooterTest(String[] color) { // цвета самоката
         this.color = color;
     }
 

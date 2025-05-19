@@ -4,7 +4,7 @@ import io.qameta.allure.Step;
 import io.restassured.response.ValidatableResponse;
 import static sprintseven.steps.ApiEndpoints.*;
 
-public class CourierSteps {
+public class CourierSteps { // методы для курьера
 
     @Step("Create courier with all required fields")
     public ValidatableResponse createCourierWithAllRequiredFields(String login, String password, String firstName) {

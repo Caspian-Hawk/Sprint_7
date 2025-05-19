@@ -1,6 +1,6 @@
 package sprintseven.steps;
 
-public class OrderModel {
+public class OrderModel { // и здесь тоже не подтягивается
     private String firstName;
     private String lastName;
     private String address;
